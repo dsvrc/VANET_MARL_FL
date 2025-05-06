@@ -11,16 +11,15 @@ class VANETEnvironment(gym.Env):
         self.num_vehicles = num_vehicles
         self.num_rsus = num_rsus
         self.current_timestamp = 0.0
-        self.max_timestamp = 100.0 
-        self.timestep = 0.1  
-      
+        self.max_timestamp = 100.0
+        self.timestep = 0.1
+        
         self.action_space = spaces.Discrete(num_vehicles + num_rsus)
         
-       
         self.observation_space = spaces.Box(
             low=-np.inf, 
             high=np.inf, 
-            shape=(20,),  
+            shape=(20,),
             dtype=np.float32
         )
     
@@ -43,8 +42,7 @@ class VANETEnvironment(gym.Env):
         vehicle_states = self.data_processor.get_vehicle_states(self.current_timestamp)
         comm_links = self.data_processor.get_communication_links(self.current_timestamp)
         
-       
-        observation = np.zeros(20)  
+        observation = np.zeros(20)
         
         if not vehicle_states.empty:
             veh = vehicle_states.iloc[0]
@@ -53,22 +51,19 @@ class VANETEnvironment(gym.Env):
         return observation
     
     def _calculate_reward(self, action):
-       
-        
         links = self.data_processor.get_communication_links(self.current_timestamp)
         
-        action_vehicle_id = f"V{action:03d}"  
+        action_vehicle_id = f"V{action:03d}"
         
         link = links[links['target_id'] == action_vehicle_id]
         
         if link.empty:
-            return -1.0 
+            return -1.0
         
         pdr = link['pdr'].values[0]
         latency = link['latency_ms'].values[0]
         snr = link['snr_db'].values[0]
         
-        # Reward function prioritizing high PDR, low latency, high SNR
         reward = 2.0 * pdr - 0.01 * latency + 0.05 * snr
         
         return reward
