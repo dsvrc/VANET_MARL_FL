@@ -1,7 +1,6 @@
 ## How to Run the Simulation
 
 ```bash
-python run_simulation.py  
-docker logs vehicle_0  
-python plot_metrics.py
+python launch_vehicles.py to launch the vehicke side server 
+python run_server.py to launch server side terminal
 
